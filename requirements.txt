@@ -1,0 +1,12 @@
+streamlit
+opendataloader-pdf
+pdfplumber
+pymupdf
+anthropic
+markitdown[all]
+markitdown-ocr
+python-pptx
+pillow
+python-dotenv
+pyyaml
+reportlab

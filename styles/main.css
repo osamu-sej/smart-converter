@@ -1,0 +1,304 @@
+/* ════════════════════════════════════════
+   SmartConverter — カスタムスタイル
+   フォント: Noto Sans JP (日本語), Inter (英数字)
+   ════════════════════════════════════════ */
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+/* ── 全体フォント ── */
+html, body, [class*="css"] {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── アプリ背景 ── */
+.stApp {
+    background-color: #f7f8fc;
+}
+
+/* ── メインコンテナ余白 ── */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1100px;
+}
+
+/* ════ 見出しスタイル ════ */
+
+/* H1 — ページタイトル */
+h1 {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    font-size: 2rem !important;
+    font-weight: 700 !important;
+    color: #1a1a2e;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem !important;
+}
+
+/* H2 — セクション見出し */
+h2 {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: #1a1a2e;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+}
+
+/* H3 */
+h3 {
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+    color: #2d2d44;
+}
+
+/* ── キャプション ── */
+.stApp p, .stMarkdown p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+    color: #3d3d55;
+}
+
+/* ════ サイドバー ════ */
+[data-testid="stSidebar"] {
+    background-color: #1a1a2e;
+    border-right: none;
+}
+
+[data-testid="stSidebar"] * {
+    color: #e8e8f0 !important;
+}
+
+[data-testid="stSidebar"] h1 {
+    font-size: 1.4rem !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em;
+}
+
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    color: #9090b8 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+}
+
+[data-testid="stSidebar"] .stCaption p {
+    font-size: 0.8rem !important;
+    color: #8888aa !important;
+}
+
+/* サイドバー区切り線 */
+[data-testid="stSidebar"] hr {
+    border-color: #2e2e4a !important;
+    margin: 0.75rem 0 !important;
+}
+
+/* サイドバー チェックボックスラベル */
+[data-testid="stSidebar"] label {
+    font-size: 0.88rem !important;
+    color: #c8c8e0 !important;
+}
+
+/* サイドバー テキスト入力 */
+[data-testid="stSidebar"] input {
+    background-color: #2a2a44 !important;
+    border: 1px solid #3d3d60 !important;
+    color: #e8e8f0 !important;
+    font-size: 0.88rem !important;
+    border-radius: 8px !important;
+}
+
+/* success / info メッセージ in sidebar */
+[data-testid="stSidebar"] [data-testid="stAlert"] {
+    font-size: 0.82rem !important;
+    padding: 0.4rem 0.75rem !important;
+}
+
+/* ════ ボタン ════ */
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #ffffff;
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.5rem;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+    transition: all 0.2s ease;
+}
+
+.stButton > button[kind="primary"]:hover {
+    background: linear-gradient(135deg, #4338ca, #6d28d9);
+    box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    transform: translateY(-1px);
+}
+
+/* ダウンロードボタン */
+.stDownloadButton > button {
+    background-color: #ffffff;
+    color: #4f46e5;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: 2px solid #4f46e5;
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    transition: all 0.15s ease;
+}
+
+.stDownloadButton > button:hover {
+    background-color: #4f46e5;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+/* ════ メトリクスカード ════ */
+[data-testid="metric-container"] {
+    background-color: #ffffff;
+    border: 1px solid #e5e7f0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s ease;
+}
+
+[data-testid="metric-container"]:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+[data-testid="stMetricLabel"] {
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    color: #6b7280 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+[data-testid="stMetricValue"] {
+    font-size: 1.6rem !important;
+    font-weight: 700 !important;
+    color: #1a1a2e !important;
+    line-height: 1.2 !important;
+}
+
+/* ════ タブ ════ */
+.stTabs [data-baseweb="tab-list"] {
+    background-color: #f0f1f8;
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #6b7280;
+    border-radius: 8px;
+    padding: 0.4rem 1.1rem;
+    border: none;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #ffffff;
+    color: #4f46e5 !important;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* ════ テキストエリア（ソースビュー）════ */
+.stTextArea textarea {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    background-color: #1e1e2e;
+    color: #cdd6f4;
+    border: none;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+/* ════ アラート ════ */
+[data-testid="stAlert"] {
+    border-radius: 10px !important;
+    font-size: 0.88rem !important;
+}
+
+/* ════ ファイルアップローダー ════ */
+[data-testid="stFileUploader"] {
+    background-color: #ffffff;
+    border: 2px dashed #c7c9e0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: border-color 0.2s ease;
+}
+
+[data-testid="stFileUploader"]:hover {
+    border-color: #4f46e5;
+}
+
+[data-testid="stFileUploader"] label {
+    font-size: 0.88rem !important;
+    color: #6b7280 !important;
+}
+
+/* ════ 区切り線 ════ */
+hr {
+    border-color: #e5e7f0 !important;
+    margin: 1.5rem 0 !important;
+}
+
+/* ════ プレビューエリアの Markdown ════ */
+.stMarkdown h1 { font-size: 1.7rem !important; color: #1a1a2e; }
+.stMarkdown h2 { font-size: 1.3rem !important; color: #2d2d44; }
+.stMarkdown h3 { font-size: 1.1rem !important; color: #3d3d55; }
+
+.stMarkdown table {
+    font-size: 0.88rem;
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.stMarkdown th {
+    background-color: #f0f1f8;
+    color: #1a1a2e;
+    font-weight: 600;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid #e5e7f0;
+}
+
+.stMarkdown td {
+    padding: 0.5rem 0.9rem;
+    border: 1px solid #e5e7f0;
+    color: #3d3d55;
+}
+
+.stMarkdown tr:nth-child(even) td {
+    background-color: #fafafa;
+}
+
+/* ════ 画像ギャラリー ════ */
+[data-testid="stImage"] img {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+[data-testid="stImage"] img:hover {
+    transform: scale(1.02);
+}
+
+/* ════ スピナー ════ */
+.stSpinner > div {
+    border-top-color: #4f46e5 !important;
+}
