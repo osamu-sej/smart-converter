@@ -17,6 +17,13 @@ from engines.markitdown_engine import convert_with_markitdown, extract_text_pymu
 from engines.image_extractor import extract_images_with_coords, build_markdown_with_image_yaml
 from engines.layout_engine import markdown_to_pptx_with_layout, markdown_to_pdf_with_layout
 from engines.pandoc_engine import convert_markdown_to_bytes, is_pandoc_available
+from engines.gemma_engine import (
+    is_ollama_available,
+    list_ollama_models,
+    improve_markdown_with_gemma,
+    DEFAULT_MODEL,
+    OLLAMA_BASE_URL,
+)
 from utils.file_utils import save_uploaded_file, get_file_extension, cleanup_temp_dir
 from utils.markdown_utils import (
     clean_markdown,
@@ -89,7 +96,29 @@ with st.sidebar:
     st.divider()
 
     st.subheader("🤖 AI改善設定")
-    st.checkbox("Claude APIで内容改善（Phase 3）", value=False, disabled=True)
+    _ollama_ok = is_ollama_available()
+    _ollama_models = list_ollama_models() if _ollama_ok else []
+
+    if _ollama_ok:
+        st.success("Ollama 起動中", icon="🟢")
+        _model_options = _ollama_models if _ollama_models else [DEFAULT_MODEL]
+        selected_model = st.selectbox(
+            "使用モデル",
+            _model_options,
+            index=0,
+            label_visibility="collapsed",
+        )
+        use_gemma_improve = st.checkbox(
+            "Gemma でMarkdown改善（ローカル・無料）",
+            value=False,
+            help="変換後のMarkdownをGemmaで整形・改善します。",
+        )
+        ollama_url = OLLAMA_BASE_URL
+    else:
+        st.info("Ollama 未起動（`ollama serve` で有効化）", icon="⚪")
+        use_gemma_improve = False
+        selected_model = DEFAULT_MODEL
+        ollama_url = OLLAMA_BASE_URL
 
     st.subheader("🔑 Anthropic API Key")
     api_key_input = st.text_input(
@@ -224,6 +253,20 @@ if convert_button:
             progress.progress(80)
 
         markdown_result = clean_markdown(markdown_result)
+        progress.progress(90)
+
+        if use_gemma_improve and markdown_result:
+            status.info(f"🤖 Gemma（{selected_model}）でMarkdown改善中...")
+            try:
+                markdown_result = improve_markdown_with_gemma(
+                    markdown_result,
+                    model=selected_model,
+                    base_url=ollama_url,
+                )
+                st.toast(f"Gemma改善完了（{selected_model}）", icon="🤖")
+            except Exception as e:
+                st.warning(f"Gemma改善エラー（スキップ）: {e}")
+
         progress.progress(100, text="✅ 変換完了！")
         status.success("変換が完了しました！")
 
