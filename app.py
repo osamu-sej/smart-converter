@@ -24,6 +24,10 @@ from engines.gemma_engine import (
     DEFAULT_MODEL,
     OLLAMA_BASE_URL,
 )
+from engines.openrouter_engine import (
+    improve_markdown_with_openrouter,
+    DEFAULT_MODEL as OPENROUTER_DEFAULT_MODEL,
+)
 from utils.file_utils import save_uploaded_file, get_file_extension, cleanup_temp_dir
 from utils.markdown_utils import (
     clean_markdown,
@@ -95,27 +99,39 @@ with st.sidebar:
 
     st.divider()
 
-    st.subheader("🤖 AI改善設定")
+    st.subheader("🤖 AI改善設定（Gemma4）")
+
+    # OpenRouter APIキー
+    openrouter_api_key = st.text_input(
+        "OpenRouter APIキー",
+        type="password",
+        value=os.getenv("OPENROUTER_API_KEY", ""),
+        placeholder="sk-or-...",
+        label_visibility="collapsed",
+    )
+    if openrouter_api_key:
+        st.success("OpenRouter APIキー設定済み", icon="✅")
+        use_gemma4_improve = st.checkbox(
+            "Gemma4 でMarkdown改善（無料・クラウド）",
+            value=False,
+            help=f"モデル: {OPENROUTER_DEFAULT_MODEL}",
+        )
+    else:
+        st.info("OpenRouter APIキーを入力するとGemma4が使えます", icon="🔑")
+        use_gemma4_improve = False
+
+    st.divider()
+
+    # Ollama（ローカル）
     _ollama_ok = is_ollama_available()
     _ollama_models = list_ollama_models() if _ollama_ok else []
-
     if _ollama_ok:
-        st.success("Ollama 起動中", icon="🟢")
+        st.caption("🟢 Ollama 起動中（ローカル）")
         _model_options = _ollama_models if _ollama_models else [DEFAULT_MODEL]
-        selected_model = st.selectbox(
-            "使用モデル",
-            _model_options,
-            index=0,
-            label_visibility="collapsed",
-        )
-        use_gemma_improve = st.checkbox(
-            "Gemma でMarkdown改善（ローカル・無料）",
-            value=False,
-            help="変換後のMarkdownをGemmaで整形・改善します。",
-        )
+        selected_model = st.selectbox("Ollamaモデル", _model_options, index=0)
+        use_gemma_improve = st.checkbox("Ollama でMarkdown改善（ローカル）", value=False)
         ollama_url = OLLAMA_BASE_URL
     else:
-        st.info("Ollama 未起動（`ollama serve` で有効化）", icon="⚪")
         use_gemma_improve = False
         selected_model = DEFAULT_MODEL
         ollama_url = OLLAMA_BASE_URL
@@ -255,7 +271,26 @@ if convert_button:
         markdown_result = clean_markdown(markdown_result)
         progress.progress(90)
 
-        if use_gemma_improve and markdown_result:
+        # ── OpenRouter Gemma4 改善（優先） ──
+        if use_gemma4_improve and markdown_result:
+            status.info("🤖 Gemma4（OpenRouter）でMarkdown改善中...")
+            try:
+                from engines.openrouter_engine import MAX_INPUT_CHARS as OR_MAX
+                improved, was_truncated = improve_markdown_with_openrouter(
+                    markdown_result,
+                    api_key=openrouter_api_key,
+                )
+                if was_truncated:
+                    markdown_result = improved + "\n\n---\n\n" + markdown_result[OR_MAX:]
+                    st.info(f"ℹ️ 入力が長いため先頭 {OR_MAX} 文字のみ改善しました。")
+                else:
+                    markdown_result = improved
+                st.toast("Gemma4改善完了（OpenRouter）", icon="🤖")
+            except Exception as e:
+                st.warning(f"Gemma4改善エラー（スキップ）: {e}")
+
+        # ── Ollama ローカル改善 ──
+        elif use_gemma_improve and markdown_result:
             status.info(f"🤖 Gemma（{selected_model}）でMarkdown改善中（CPU実行・しばらくお待ちください）...")
             try:
                 improved, was_truncated = improve_markdown_with_gemma(
