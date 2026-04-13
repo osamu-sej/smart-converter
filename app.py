@@ -256,13 +256,20 @@ if convert_button:
         progress.progress(90)
 
         if use_gemma_improve and markdown_result:
-            status.info(f"🤖 Gemma（{selected_model}）でMarkdown改善中...")
+            status.info(f"🤖 Gemma（{selected_model}）でMarkdown改善中（CPU実行・しばらくお待ちください）...")
             try:
-                markdown_result = improve_markdown_with_gemma(
+                improved, was_truncated = improve_markdown_with_gemma(
                     markdown_result,
                     model=selected_model,
                     base_url=ollama_url,
                 )
+                # 改善部分を先頭に挿入し、切り詰めた場合は残りをそのまま末尾に付ける
+                if was_truncated:
+                    from engines.gemma_engine import MAX_INPUT_CHARS
+                    markdown_result = improved + "\n\n---\n\n" + markdown_result[MAX_INPUT_CHARS:]
+                    st.info(f"ℹ️ 入力が長いため先頭 {MAX_INPUT_CHARS} 文字のみ改善しました。残りはそのまま結合しています。")
+                else:
+                    markdown_result = improved
                 st.toast(f"Gemma改善完了（{selected_model}）", icon="🤖")
             except Exception as e:
                 st.warning(f"Gemma改善エラー（スキップ）: {e}")

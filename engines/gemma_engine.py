@@ -9,6 +9,9 @@ import requests
 OLLAMA_BASE_URL = "http://localhost:11434"
 DEFAULT_MODEL = "gemma4:e4b"
 
+# CPU環境での推奨入力上限（文字数）
+MAX_INPUT_CHARS = 3000
+
 _IMPROVE_PROMPT = """\
 以下のMarkdownドキュメントを改善してください。
 
@@ -53,33 +56,37 @@ def improve_markdown_with_gemma(
     markdown: str,
     model: str = DEFAULT_MODEL,
     base_url: str = OLLAMA_BASE_URL,
-    timeout: int = 180,
-) -> str:
+    timeout: int = 300,
+    max_chars: int = MAX_INPUT_CHARS,
+) -> tuple[str, bool]:
     """
     GemmaモデルでMarkdownを改善する。
 
     Args:
         markdown: 改善対象のMarkdown文字列
-        model: 使用するOllamaモデル名（例: "gemma4:e4b"）
+        model: 使用するOllamaモデル名（例: "gemma3:1b"）
         base_url: OllamaのベースURL
         timeout: タイムアウト秒数
+        max_chars: 入力の最大文字数（CPU環境での速度制限）
 
     Returns:
-        改善されたMarkdown文字列
+        (改善されたMarkdown文字列, 切り詰めが発生したか)
 
     Raises:
         requests.RequestException: Ollamaへの接続エラー
-        ValueError: モデルが見つからない場合
     """
-    prompt = _IMPROVE_PROMPT.format(markdown=markdown)
+    truncated = len(markdown) > max_chars
+    input_md = markdown[:max_chars] if truncated else markdown
+
+    prompt = _IMPROVE_PROMPT.format(markdown=input_md)
 
     payload = {
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "stream": False,
         "options": {
-            "temperature": 0.3,  # 低めで安定した出力
-            "num_predict": 8192,
+            "temperature": 0.3,
+            "num_predict": 2048,
         },
     }
 
@@ -91,7 +98,7 @@ def improve_markdown_with_gemma(
         )
         r.raise_for_status()
         data = r.json()
-        return data["message"]["content"].strip()
+        return data["message"]["content"].strip(), truncated
     except requests.exceptions.ConnectionError:
         raise RuntimeError(
             "Ollamaに接続できません。`ollama serve` が起動しているか確認してください。"
